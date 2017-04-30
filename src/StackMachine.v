@@ -178,3 +178,9 @@ Inductive tbinop : type -> type -> type -> Set :=
 | TTimes : tbinop Nat Nat Nat
 | TEq : forall t, tbinop t t Bool
 | TLt : tbinop Nat Nat Bool.
+
+(* Type family for typed expressions *)
+Inductive texp : type -> Set :=
+| TNConst : nat -> texp Nat
+| TBConst : bool -> texp Bool
+| TBinop : forall t1 t2 t, tbinop t1 t2 t -> texp t1 -> texp t2 -> texp t.
