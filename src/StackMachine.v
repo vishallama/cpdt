@@ -191,3 +191,13 @@ Definition typeDenote (t : type) : Set :=
   | Nat => nat
   | Bool => bool
   end.
+
+Definition tbinopDenote arg1 arg2 res (b : tbinop arg1 arg2 res)
+  : typeDenote arg1 -> typeDenote arg2 -> typeDenote res :=
+  match b with
+  | TPlus => plus
+  | TTimes => mult
+  | TEq Nat => beq_nat
+  | TEq Bool => eqb
+  | TLt => leb
+  end.
