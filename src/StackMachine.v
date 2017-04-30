@@ -37,3 +37,16 @@ Proof. reflexivity. Qed.
 Example exp_3 :
   expDenote (Binop Times (Binop Plus (Const 2) (Const 2)) (Const 7)) = 28.
 Proof. reflexivity. Qed.
+
+(* Target Language *)
+Inductive instr : Set :=
+| iConst : nat -> instr
+| iBinop : binop -> instr.
+
+Definition prog := list instr.
+Definition stack := list nat.
+
+(* An instruction either pushes a constant onto the stack or pops two
+   arguments, applies a binary operator to them, and then pushes the
+   result onto the stack.
+*)
