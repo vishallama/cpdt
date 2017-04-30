@@ -161,3 +161,13 @@ Proof.
   rewrite compile_correct';
   reflexivity.
 Qed.
+
+
+(* 2.2 - Typed Expressions *)
+
+(* Source Language *)
+
+(* Trivial language of types to classify expressions *)
+Inductive type : Set :=
+| Nat
+| Bool.
