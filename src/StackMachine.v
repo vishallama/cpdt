@@ -145,6 +145,7 @@ Proof.
     reflexivity.
 Qed.
 
+(* Automated proof *)
 Lemma compile_correct' :
   forall e p s,
   progDenote (compile e ++ p) s = progDenote p (expDenote e :: s).
