@@ -50,3 +50,16 @@ Definition stack := list nat.
    arguments, applies a binary operator to them, and then pushes the
    result onto the stack.
 *)
+
+(* Give instructions meanings as functions from stacks to optional
+   stacks to handle stack underflows.
+*)
+Definition instrDenote (i : instr) (s : stack) : option stack :=
+  match i with
+  | iConst n => Some (n :: s)
+  | iBinop b =>
+    match s with
+    | arg1 :: arg2 :: s' => Some ((binopDenote b) arg1 arg2 :: s')
+    | _ => None
+    end
+  end.
