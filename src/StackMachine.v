@@ -63,3 +63,16 @@ Definition instrDenote (i : instr) (s : stack) : option stack :=
     | _ => None
     end
   end.
+
+(* Function which iterates application of instrDenote through a whole
+   program.
+*)
+Fixpoint progDenote (p : prog) (s : stack) : option stack :=
+  match p with
+  | nil => Some s
+  | i :: p' =>
+    match (instrDenote i s) with
+    | None => None
+    | Some s' => progDenote p' s'
+    end
+  end.
