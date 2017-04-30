@@ -171,3 +171,10 @@ Qed.
 Inductive type : Set :=
 | Nat
 | Bool.
+
+(* Expanded set of binary operators *)
+Inductive tbinop : type -> type -> type -> Set :=
+| TPlus : tbinop Nat Nat Nat
+| TTimes : tbinop Nat Nat Nat
+| TEq : forall t, tbinop t t Bool
+| TLt : tbinop Nat Nat Bool.
