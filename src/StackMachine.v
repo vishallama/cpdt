@@ -76,3 +76,24 @@ Fixpoint progDenote (p : prog) (s : stack) : option stack :=
     | Some s' => progDenote p' s'
     end
   end.
+
+(* Translation *)
+Fixpoint compile (e : exp) : prog :=
+  match e with
+  | Const n => iConst n :: nil
+  | Binop b e1 e2 => compile e2 ++ compile e1 ++ iBinop b :: nil
+  end.
+
+Example compile_1 :
+  compile (Const 42) = iConst 42 :: nil.
+Proof. reflexivity. Qed.
+
+Example compile_2 :
+  compile (Binop Plus (Const 2) (Const 2))
+  = iConst 2 :: iConst 2 :: iBinop Plus :: nil.
+Proof. reflexivity. Qed.
+
+Example compile_3 :
+  compile (Binop Times (Binop Plus (Const 2) (Const 2)) (Const 7))
+  = iConst 7 :: iConst 2 :: iConst 2 :: iBinop Plus :: iBinop Times :: nil.
+Proof. reflexivity. Qed.
