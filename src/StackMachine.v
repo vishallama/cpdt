@@ -97,3 +97,19 @@ Example compile_3 :
   compile (Binop Times (Binop Plus (Const 2) (Const 2)) (Const 7))
   = iConst 7 :: iConst 2 :: iConst 2 :: iBinop Plus :: iBinop Times :: nil.
 Proof. reflexivity. Qed.
+
+Example progDenote_1 :
+  progDenote (compile (Const 42)) nil = Some (42 :: nil).
+Proof. reflexivity. Qed.
+
+Example progDenote_2 :
+  progDenote (
+    compile (Binop Plus (Const 2) (Const 2)))
+    nil = Some (4 :: nil).
+Proof. reflexivity. Qed.
+
+Example progDenote_3 :
+  progDenote (
+    compile (Binop Times (Binop Plus (Const 2) (Const 2)) (Const 7)))
+    nil = Some (28 :: nil).
+Proof. reflexivity. Qed.
