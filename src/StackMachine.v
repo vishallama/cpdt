@@ -184,3 +184,10 @@ Inductive texp : type -> Set :=
 | TNConst : nat -> texp Nat
 | TBConst : bool -> texp Bool
 | TBinop : forall t1 t2 t, tbinop t1 t2 t -> texp t1 -> texp t2 -> texp t.
+
+(* Map types of our 'object' language into Coq types *)
+Definition typeDenote (t : type) : Set :=
+  match t with
+  | Nat => nat
+  | Bool => bool
+  end.
