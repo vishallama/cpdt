@@ -113,3 +113,34 @@ Example progDenote_3 :
     compile (Binop Times (Binop Plus (Const 2) (Const 2)) (Const 7)))
     nil = Some (28 :: nil).
 Proof. reflexivity. Qed.
+
+(* Translation Correctness *)
+Theorem compile_correct :
+  forall e, progDenote (compile e) nil = Some (expDenote e :: nil).
+Proof.
+  (* Prove auxiliary lemma that strengthens the induction hypothesis on e *)
+Abort.
+
+(* Manual proof *)
+Lemma compile_correct'' :
+  forall e p s,
+  progDenote (compile e ++ p) s = progDenote p (expDenote e :: s).
+Proof.
+  induction e as [n | b e1 IHe1 e2 IHe2].
+  - (* e = Const n *)
+    simpl; intros; reflexivity.
+  - (* e = Binop b e1 e2 *)
+    intros.
+    unfold compile.
+    fold compile.
+    unfold expDenote.
+    fold expDenote.
+    rewrite app_assoc_reverse.
+    rewrite IHe2.
+    rewrite app_assoc_reverse.
+    rewrite IHe1.
+    unfold progDenote at 1.
+    simpl.
+    fold progDenote.
+    reflexivity.
+Qed.
