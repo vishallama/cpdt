@@ -152,3 +152,12 @@ Lemma compile_correct' :
 Proof.
   induction e; crush.
 Qed.
+
+Theorem compile_correct :
+  forall e, progDenote (compile e) nil = Some (expDenote e :: nil).
+Proof.
+  intros;
+  rewrite (app_nil_end (compile e));
+  rewrite compile_correct';
+  reflexivity.
+Qed.
