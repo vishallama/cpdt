@@ -27,3 +27,13 @@ Fixpoint expDenote (e : exp) : nat :=
   | Const n => n
   | Binop b e1 e2 => (binopDenote b) (expDenote e1) (expDenote e2)
   end.
+
+Example exp_1 : expDenote (Const 42) = 42.
+Proof. reflexivity. Qed.
+
+Example exp_2 : expDenote (Binop Plus (Const 2) (Const 2)) = 4.
+Proof. reflexivity. Qed.
+
+Example exp_3 :
+  expDenote (Binop Times (Binop Plus (Const 2) (Const 2)) (Const 7)) = 28.
+Proof. reflexivity. Qed.
