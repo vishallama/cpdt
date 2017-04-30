@@ -201,3 +201,10 @@ Definition tbinopDenote arg1 arg2 res (b : tbinop arg1 arg2 res)
   | TEq Bool => eqb
   | TLt => leb
   end.
+
+Fixpoint texpDenote t (e : texp t) : typeDenote t :=
+  match e with
+  | TNConst n => n
+  | TBConst b => b
+  | TBinop b e1 e2 => (tbinopDenote b) (texpDenote e1) (texpDenote e2)
+  end.
