@@ -144,3 +144,10 @@ Proof.
     fold progDenote.
     reflexivity.
 Qed.
+
+Lemma compile_correct' :
+  forall e p s,
+  progDenote (compile e ++ p) s = progDenote p (expDenote e :: s).
+Proof.
+  induction e; crush.
+Qed.
