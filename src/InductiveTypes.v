@@ -146,3 +146,36 @@ Theorem length_app :
   forall T (ls1 ls2 : list T),
   length (app ls1 ls2) = plus (length ls1) (length ls2).
 Proof. induction ls1; crush. Qed.
+
+Check list_ind.
+
+
+(* Mutually Inductive Types *)
+Inductive even_list : Set :=
+| ENil : even_list
+| ECons : nat -> odd_list -> even_list
+
+with odd_list : Set :=
+| OCons : nat -> even_list -> odd_list.
+
+Fixpoint elength (el : even_list) : nat :=
+  match el with
+  | ENil => O
+  | ECons _ ol => S (olength ol)
+  end
+
+with olength (ol : odd_list) : nat :=
+  match ol with
+  | OCons _ el => S (elength el)
+  end.
+
+Fixpoint eapp (el1 el2 : even_list) : even_list :=
+  match el1 with
+  | ENil => el2
+  | ECons n ol => ECons n (oapp ol el2)
+  end
+
+with oapp (ol : odd_list) (el : even_list) : odd_list :=
+  match ol with
+  | OCons n el' => OCons n (eapp el' el)
+  end.
