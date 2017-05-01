@@ -123,3 +123,26 @@ Theorem nsize_nsplice :
 Proof. induction tr1; crush. Qed.
 
 Check nat_btree_ind.
+
+
+(* 3.4 - Parameterized Types *)
+Inductive list (T : Set) : Set :=
+| Nil : list T
+| Cons : T -> list T -> list T.
+
+Fixpoint length T (ls : list T) : nat :=
+  match ls with
+  | Nil _ => O
+  | Cons _ ls' => S (length ls')
+  end.
+
+Fixpoint app T (ls1 ls2 : list T) : list T :=
+  match ls1 with
+  | Nil _ => ls2
+  | Cons x ls1' => Cons x (app ls1' ls2)
+  end.
+
+Theorem length_app :
+  forall T (ls1 ls2 : list T),
+  length (app ls1 ls2) = plus (length ls1) (length ls2).
+Proof. induction ls1; crush. Qed.
