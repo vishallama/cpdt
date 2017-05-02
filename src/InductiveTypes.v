@@ -211,3 +211,57 @@ Qed.
 
 (* In the above proof, we just need to specify two predicates, one for each
    of the mutually inductive types. *)
+
+
+(* 3.6 - Reflexive Types *)
+
+(* Consider a simple formula for a subset of propositional logic *)
+Inductive pformula : Set :=
+| Truth : pformula
+| Falsehood : pformula
+| Conjunction : pformula -> pformula -> pformula.
+
+(* We can make the semantics explicit with a recursive function *)
+Fixpoint pformulaDenote (f : pformula) : Prop :=
+  match f with
+  | Truth => True
+  | Falsehood => False
+  | Conjunction f1 f2 => (pformulaDenote f1) /\ (pformulaDenote f2)
+  end.
+
+(* When we consider first-order logic, it is very handy to give constructors
+   recursive arguments that are functions. *)
+Inductive formula : Set :=
+| Eq : nat -> nat -> formula
+| And : formula -> formula -> formula
+| Forall : (nat -> formula) -> formula.
+
+(* The above is an example of a reflexive type, which includes at least one
+   constructor that takes as an argument a function returning the same type
+   we are defining. In the above, we avoid needing to include a notion of
+   variables in our type, by using Coq functions to encode the syntax of
+   quantification. For instance, here is the encoding of
+     forall x : nat, x = x *)
+Example forall_refl : formula := Forall (fun x => Eq x x).
+
+Fixpoint formulaDenote (f : formula) : Prop :=
+  match f with
+  | Eq n1 n2 => n1 = n2
+  | And f1 f2 => formulaDenote f1 /\ formulaDenote f2
+  | Forall f' => forall n : nat, formulaDenote (f' n)
+  end.
+
+Fixpoint swapper (f : formula) : formula :=
+  match f with
+  | Eq n1 n2 => Eq n2 n1
+  | And f1 f2 => And (swapper f1) (swapper f2)
+  | Forall f' => Forall (fun n => swapper (f' n))
+  end.
+
+Theorem swapper_preserves_truty :
+  forall f, formulaDenote f -> formulaDenote (swapper f).
+Proof. induction f; crush. Qed.
+
+Check formula_ind.
+
+(* Only some of the reflexive types in Coq are legal *)
