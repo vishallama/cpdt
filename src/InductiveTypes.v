@@ -179,3 +179,35 @@ with oapp (ol : odd_list) (el : even_list) : odd_list :=
   match ol with
   | OCons n el' => OCons n (eapp el' el)
   end.
+
+Check even_list_ind.
+
+(* In the case of definitions of mutually inductive types, Coq's generation
+   of induction principles is incomplete. We only get non-mutual induction
+   principles by default. To get mutual induction principles, we need to
+   ask for them using the Scheme command. *)
+
+Scheme even_list_mut := Induction for even_list Sort Prop
+with odd_list_mut := Induction for odd_list Sort Prop.
+
+Check even_list_mut.
+
+(* Prove theorem using inductive principle directly, instead of using the
+   induction command. *)
+Theorem n_plus_O' : forall n : nat, n + O = n.
+Proof. apply (nat_ind (fun n => plus n O = n)); crush. Qed.
+
+(* The above technique generalizes to the mutually inductive types *)
+Theorem elength_eapp :
+  forall el1 el2 : even_list,
+  elength (eapp el1 el2) = plus (elength el1) (elength el2).
+Proof.
+  apply (even_list_mut
+    (fun el1 : even_list => forall el2 : even_list,
+      elength (eapp el1 el2) = plus (elength el1) (elength el2))
+    (fun ol : odd_list => forall el : even_list,
+      olength (oapp ol el) = plus (olength ol) (elength el))); crush.
+Qed.
+
+(* In the above proof, we just need to specify two predicates, one for each
+   of the mutually inductive types. *)
