@@ -365,3 +365,101 @@ Section formula_ind'.
     | Forall f' => Forall_case f' (fun n => formula_ind' (f' n))
     end.
 End formula_ind'.
+
+
+(* 3.8 - Nested Inductive Types *)
+
+(* Extend binary trees to trees with arbitrary finite branching *)
+Inductive nat_tree : Set :=
+| NNode' : nat -> list nat_tree -> nat_tree.
+
+(* Automatically generated induction principle for nat_tree is too weak *)
+Check nat_tree_ind.
+
+(* But, we can implement a suitable induction principle manually for
+   nat_tree. First, we define a predicate capturing the idea that some
+   property holds of every element in a list. Here, All duplicates the
+   Coq standard library's Forall predicate. *)
+Section All.
+  Variable T : Set.
+  Variable P : T -> Prop.
+
+  Fixpoint All (ls : list T) : Prop :=
+    match ls with
+    | Nil _ => True
+    | Cons h t => P h /\ All t
+    end.
+End All.
+
+(* Create our induction principle for nat_tree *)
+Section nat_tree_ind'.
+  Variable P : nat_tree -> Prop.
+
+  Hypothesis NNode'_case : forall (n : nat) (ls : list nat_tree),
+    All P ls -> P (NNode' n ls).
+
+  Fixpoint nat_tree_ind' (tr : nat_tree) : P tr :=
+    match tr with
+    | NNode' n ls => NNode'_case n ls
+        ((fix list_nat_tree_ind (ls : list nat_tree) : All P ls :=
+          match ls with
+          | Nil _ =>
+              I
+          | Cons tr' rest =>
+              conj (nat_tree_ind' tr') (list_nat_tree_ind rest)
+          end) ls)
+    end.
+End nat_tree_ind'.
+
+(* Try out our induction principle by defining some recursive functions
+   on nat_tree and proving a theorem about them. *)
+Section map.
+  Variables T T' : Set.
+  Variable F : T -> T'.
+
+  Fixpoint map (ls : list T) : list T' :=
+    match ls with
+    | Nil _ => Nil _
+    | Cons h t => Cons (F h) (map t)
+    end.
+End map.
+
+Fixpoint sum (ls : list nat) : nat :=
+  match ls with
+  | Nil _ => O
+  | Cons h t => plus h (sum t)
+  end.
+
+(* Size function over our trees *)
+Fixpoint ntsize (tr : nat_tree) : nat :=
+  match tr with
+  | NNode' _ trs => S (sum (map ntsize trs))
+  end.
+
+(* Tree splicing *)
+Fixpoint ntsplice (tr1 tr2 : nat_tree) : nat_tree :=
+  match tr1 with
+  | NNode' n (Nil _) => NNode' n (Cons tr2 (Nil _))
+  | NNode' n (Cons tr trs) => NNode' n (Cons (ntsplice tr tr2) trs)
+  end.
+
+Lemma plus_S : forall n1 n2 : nat,
+  plus n1 (S n2) = S (plus n1 n2).
+Proof. induction n1; crush. Qed.
+
+(* Add Lemma plus_S as a hint *)
+Hint Rewrite plus_S.
+
+Theorem ntsize_ntsplice :
+  forall tr1 tr2 : nat_tree,
+  ntsize (ntsplice tr1 tr2) = plus (ntsize tr2) (ntsize tr1).
+Proof.
+  induction tr1 using nat_tree_ind'; crush.
+  destruct ls; crush.
+  (* Automate the proof, so that there is no mention of ls variable *)
+  Restart.
+  Hint Extern 1
+    (ntsize (match ?LS with (Nil _) => _ | Cons _ _ => _ end) = _) =>
+      destruct LS; crush.
+  induction tr1 using nat_tree_ind'; crush.
+Qed.
