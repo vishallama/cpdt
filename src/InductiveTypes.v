@@ -265,3 +265,103 @@ Proof. induction f; crush. Qed.
 Check formula_ind.
 
 (* Only some of the reflexive types in Coq are legal *)
+
+
+(* 3.7 - An Interlude on Induction Principles *)
+
+(* For most inductive types T, we get not just induction principles T_ind,
+   but also recursion principles T_rec. We can use T_rec to write recursive
+   definitions without explicit Fixpoint recursion. For example, the
+   following two definitions are equivalent: *)
+Fixpoint plus_recursive (n : nat) : nat -> nat :=
+  match n with
+  | O => fun m => m
+  | S n' => fun m => S (plus_recursive n' m)
+  end.
+
+Definition plus_rec : nat -> nat -> nat :=
+  nat_rec (fun _ : nat => nat -> nat) (fun m => m) (fun _ r m => S (r m)).
+Print plus_rec.
+
+Theorem plus_equivalent : plus_recursive = plus_rec.
+Proof. reflexivity. Qed.
+
+Print nat_rec.
+Print nat_rect.
+
+(* nat_rec is implemented in terms of nat_rect, but there is nothing special
+   about the latter. We can reimplement it manually. *)
+Fixpoint nat_rect' (P : nat -> Type)
+  (HO : P O)
+  (HS : forall n, P n -> P (S n))
+  (n : nat) :=
+  match n return (P n) with
+  | O => HO
+  | S n' => HS n' (nat_rect' P HO HS n')
+  end.
+
+(* Reimplement nat_ind using sections *)
+Section nat_ind'.
+  Variable P : nat -> Type.
+  Hypothesis O_case : P O.
+  Hypothesis S_case : forall n : nat, P n -> P (S n).
+
+  Fixpoint nat_ind' (n : nat) : P n :=
+    match n with
+    | O => O_case
+    | S n' => S_case (nat_ind' n')
+    end.
+End nat_ind'.
+
+Print nat_ind'.
+
+(* The Coq nat_ind and our manually constructed nat_ind' are the same *)
+Theorem nat_ind_eq_nat_ind' : nat_ind = nat_ind'.
+Proof. reflexivity. Qed.
+
+Print even_list_mut.
+
+(* Reimplement even_list_mut manually *)
+Section even_list_mut'.
+  Variable Peven : even_list -> Prop.
+  Variable Podd : odd_list -> Prop.
+
+  Hypothesis ENil_case : Peven ENil.
+  Hypothesis ECons_case :
+    forall (n : nat) (o : odd_list),
+    Podd o -> Peven (ECons n o).
+  Hypothesis OCons_case :
+    forall (n : nat) (e : even_list),
+    Peven e -> Podd (OCons n e).
+
+  Fixpoint even_list_mut' (e : even_list) : Peven e :=
+    match e with
+    | ENil => ENil_case
+    | ECons n o => ECons_case n (odd_list_mut' o)
+    end
+  with odd_list_mut' (o : odd_list) : Podd o :=
+    match o with
+    | OCons n e => OCons_case n (even_list_mut' e)
+    end.
+End even_list_mut'.
+
+Theorem even_list_mut_eq_even_list_mut' : even_list_mut = even_list_mut'.
+Proof. reflexivity. Qed.
+
+(* Reimplement induction principles for our reflexive type *)
+Section formula_ind'.
+  Variable P : formula -> Prop.
+
+  Hypothesis Eq_case : forall n1 n2 : nat, P (Eq n1 n2).
+  Hypothesis And_case : forall f1 f2 : formula,
+    P f1 -> P f2 -> P (And f1 f2).
+  Hypothesis Forall_case : forall f : nat -> formula,
+    (forall n : nat, P (f n)) -> P (Forall f).
+
+  Fixpoint formula_ind' (f : formula) : P f :=
+    match f with
+    | Eq n1 n2 => Eq_case n1 n2
+    | And f1 f2 => And_case (formula_ind' f1) (formula_ind' f2)
+    | Forall f' => Forall_case f' (fun n => formula_ind' (f' n))
+    end.
+End formula_ind'.
