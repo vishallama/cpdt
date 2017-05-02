@@ -2,7 +2,6 @@ Require Import Bool Arith List.
 Require Import CpdtTactics.
 
 Set Implicit Arguments.
-Set Asymmetric patterns.
 
 
 (* 2.1 - Arithmetic Expressions Over Natural Numbers *)
