@@ -463,3 +463,26 @@ Proof.
       destruct LS; crush.
   induction tr1 using nat_tree_ind'; crush.
 Qed.
+
+
+(* Manual Proofs About Constructors *)
+
+(* Manual proof for discriminate *)
+Theorem true_neq_false : true <> false.
+Proof.
+  (* one step reduction to unfold the definition of logical negation *)
+  red.
+  intro H.
+  change ((fun b : bool =>
+             if b then True else False) false).
+  rewrite <- H.
+  trivial.
+Qed.
+
+(* Manual proof for injectivity of the constructor S *)
+Theorem S_inj'' : forall n m : nat, S n = S m -> n = m.
+Proof.
+  intros n m H.
+  change (pred (S n) = pred (S m)).
+  rewrite H. reflexivity.
+Qed.
