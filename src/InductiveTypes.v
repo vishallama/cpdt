@@ -2,7 +2,6 @@ Require Import Bool Arith List.
 Require Import CpdtTactics.
 
 Set Implicit Arguments.
-Set Asymmetric patterns.
 
 
 (* 3.1 - Proof Terms *)
