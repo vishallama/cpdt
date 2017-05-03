@@ -57,4 +57,4 @@ End Propositional.
       a proof in Coq is just a functional program that we can run, a general
       law of the excluded middle would give us a decision procedure for the
       halting problem, where an instantiation of P could be a formula like
-      'this particular Turing machine halts'.
+      'this particular Turing machine halts'. *)
