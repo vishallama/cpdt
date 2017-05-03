@@ -42,3 +42,19 @@ Section Propositional.
     length (ls1 ++ ls2) = 6 \/ length ls1 = length ls2.
   Proof. Hint Rewrite app_length. crush. Qed.
 End Propositional.
+
+
+(* 4.2 - What Does It Mean to Be Constructive? *)
+
+(* Coq implements constructive or intuitionistic logic, wherein classical
+   tautologies like ~~ P and P \/ ~P do not always hold. In general, we can
+   only prove these tautologies when P is decidable, in the sense of
+   computability theory.
+
+   Q. Why doesn't P \/ ~P (law of the excluded middle) always hold?
+   A. The Curry-Howard encoding that Coq uses for 'or' allows us to extract
+      either a proof of P or a proof of ~P from any proof of P \/ ~P. Since
+      a proof in Coq is just a functional program that we can run, a general
+      law of the excluded middle would give us a decision procedure for the
+      halting problem, where an instantiation of P could be a formula like
+      'this particular Turing machine halts'.
