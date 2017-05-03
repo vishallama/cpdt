@@ -79,3 +79,22 @@ Theorem exist2 :
   forall n m : nat,
   (exists x : nat, n + x = m) -> n <= m.
 Proof. destruct 1; (* firstorder *) (* intuition *) crush. Qed.
+
+
+(* 4.4 Predicates with Implicit Equality *)
+Inductive isZero : nat -> Prop :=
+| IsZero : isZero O.
+
+Theorem isZero_zero : isZero O.
+Proof. constructor. Qed.
+
+(* In Coq, equality is just another inductive type. It is the least reflexive
+   relation. *)
+Print eq.
+
+Theorem isZero_plus :
+  forall n m : nat, isZero m -> n + m = n.
+Proof. destruct 1; crush. Qed.
+
+Theorem isZero_contra : isZero 1 -> False.
+Proof. inversion 1. Qed.
