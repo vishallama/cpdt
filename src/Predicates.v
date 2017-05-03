@@ -58,3 +58,15 @@ End Propositional.
       law of the excluded middle would give us a decision procedure for the
       halting problem, where an instantiation of P could be a formula like
       'this particular Turing machine halts'. *)
+
+
+(* 4.3 - First-Order Logic *)
+
+(* The 'forall' connective in first-order logic is built into Coq. It is the
+   dependent function type constructor. Implication and universal
+   quantification are just different syntactic shorthands for the same Coq
+   mechanism. A formula P -> Q is equivalent to forall x : T, Q, where x does
+   not appear in Q.
+
+   Existential quantification is defined in the standard library in terms of
+   universal quantification. *)
