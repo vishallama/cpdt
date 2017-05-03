@@ -98,3 +98,66 @@ Proof. destruct 1; crush. Qed.
 
 Theorem isZero_contra : isZero 1 -> False.
 Proof. inversion 1. Qed.
+
+
+(* 4.5 - Recursive Predicates *)
+
+(* Inductive definition of even *)
+Inductive even : nat -> Prop :=
+| EvenO : even O
+| EvenSS : forall n, even n -> even (S (S n)).
+
+Theorem even_O : even O.
+Proof. constructor. Qed.
+
+Theorem even_4 : even 4.
+Proof. repeat constructor. Qed.
+
+Hint Constructors even.
+
+Theorem even_4' : even 4.
+Proof. auto. Qed.
+
+Theorem even_1_contra : ~ even 1.
+Proof. inversion 1. Qed.
+
+Theorem even_3_contra : ~ even 3.
+Proof. inversion 1 as [| n H1 H']; inversion H1. Qed.
+
+(* Inductive proofs about even *)
+Theorem even_plus :
+  forall n m, even n -> even m -> even (n + m).
+Proof. induction 1; crush. Qed.
+
+
+(* Induction on recursive predicates *)
+Lemma even_contra' :
+  forall n', even n' -> forall n, n' = S (n + n) -> False.
+Proof.
+  Hint Rewrite <- plus_n_Sm.
+  induction 1; crush;
+  match goal with
+  | [H : S ?N = ?N0 + ?N0 |- _] => destruct N; destruct N0
+  end; crush.
+Qed.
+
+Theorem even_contra : forall n, ~ even (S (n + n)).
+Proof. unfold not; intros; eapply even_contra'; eauto. Qed.
+
+(* Above, we use a variant eapply of apply. eapply will introduce
+   unification variables for undetermined arguments. And, eauto is able to
+   determine the right values for those unification variables, using a
+   variant of the classic algorithm for 'unification'.
+
+   In general, quantified variables and hypotheses that appear before the
+   induction object in the theorem statement stay fixed throughout the
+   inductive proof. Variables and hypotheses that are quantified after the
+   induction object may be varied explicitly in uses of inductive hypotheses.
+
+   Coq implements 'induction' this way for a few reasons. It avoids
+   burdening this basic tactic with additional heuristic smarts. Also,
+   dealing with more complex inductive hypotheses could cause particular
+   automation machinery to fail when it would have succeeded before. In
+   general, we want to avoid quantifiers in our proofs whenever we can,
+   and that goal is furthered by the refactoring that the induction tactic
+   forces us to do. *)
