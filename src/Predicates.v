@@ -70,3 +70,12 @@ End Propositional.
 
    Existential quantification is defined in the standard library in terms of
    universal quantification. *)
+Print ex.
+
+Theorem exist1 : exists x : nat, x + 1 = 2.
+Proof. exists 1; reflexivity. Qed.
+
+Theorem exist2 :
+  forall n m : nat,
+  (exists x : nat, n + x = m) -> n <= m.
+Proof. destruct 1; (* firstorder *) (* intuition *) crush. Qed.
