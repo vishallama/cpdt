@@ -32,3 +32,12 @@ Section stream.
 End stream.
 
 Arguments Cons {A} _ _.
+
+(* Recursive definitions were necessary to 'use' values of recursive inductive
+   types effectively. We need co-recursive definitions to 'build' values of
+   co-inductive types effectively. *)
+CoFixpoint zeroes : stream nat := Cons 0 zeroes.
+
+(* Stream that alternates between true and false *)
+CoFixpoint trues_falses : stream bool := Cons true falses_trues
+with falses_trues : stream bool := Cons false trues_falses.
