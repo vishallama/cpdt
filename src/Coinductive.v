@@ -41,3 +41,21 @@ CoFixpoint zeroes : stream nat := Cons 0 zeroes.
 (* Stream that alternates between true and false *)
 CoFixpoint trues_falses : stream bool := Cons true falses_trues
 with falses_trues : stream bool := Cons false trues_falses.
+
+(* Co-inductive values as arguments to recursive functions *)
+Fixpoint approx {A} (s : stream A) (n : nat) : list A :=
+  match n with
+  | O => nil
+  | S n' =>
+    match s with
+    | Cons h t => h :: approx t n'
+    end
+  end.
+
+Example approx_test1 :
+  approx zeroes 5 = 0 :: 0 :: 0 :: 0 :: 0 :: nil.
+Proof. reflexivity. Qed.
+
+Example approx_test2 :
+  approx trues_falses 3 = true :: false :: true :: nil.
+Proof. reflexivity. Qed.
