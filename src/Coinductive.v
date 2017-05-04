@@ -71,3 +71,8 @@ Proof. reflexivity. Qed.
    condition. That is, every co-recursive call must be guarded by a
    constructor. In other words, every co-recursive call must be a direct
    argument to a constructor of the co-inductive type we are generating. *)
+
+CoFixpoint map {A B} (f : A -> B) (s : stream A) : stream B :=
+  match s with
+  | Cons h t => Cons (f h) (map f t)
+  end.
