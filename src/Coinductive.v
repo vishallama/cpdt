@@ -19,3 +19,14 @@ Require Import CpdtTactics.
   Coq has special support for a class of lazy data structures that happens
   to contain most examples found in Haskell. That mechanism comprises the
   use of co-inductive types. *)
+
+
+(* 5.1 - Computing with Infinite Data *)
+
+(* Streams (lazy lists) - most basic type of infinite data *)
+Section stream.
+  Variable A : Type.
+
+  CoInductive stream : Type :=
+  | Cons : A -> stream -> stream.
+End stream.
