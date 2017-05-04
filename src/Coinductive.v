@@ -76,3 +76,12 @@ CoFixpoint map {A B} (f : A -> B) (s : stream A) : stream B :=
   match s with
   | Cons h t => Cons (f h) (map f t)
   end.
+
+CoFixpoint interleave {A} (s1 s2 : stream A) : stream A :=
+  match s1, s2 with
+  | Cons h1 t1, Cons h2 t2 => Cons h1 (Cons h2 (interleave t1 t2))
+  end.
+
+(* In Coq, a co-recursive call must be a direct argument to a constructor,
+   nested only inside of other constructor calls or fun or match
+   expressions. *)
