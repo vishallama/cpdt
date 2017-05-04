@@ -59,3 +59,15 @@ Proof. reflexivity. Qed.
 Example approx_test2 :
   approx trues_falses 3 = true :: false :: true :: nil.
 Proof. reflexivity. Qed.
+
+(* There are some very important restrictions on the use of co-inductive
+   types that are dual to the restrictions on the use of inductive types.
+   Fixpoints consume values of inductive types, with restrictions on which
+   arguments may be passed in recursive calls. Dually, co-fixpoints produce
+   values of co-inductive types, with restrictions on what may be done with
+   the results of co-recursive calls.
+
+   The restriction for co-inductive types shows up as the 'guardedness'
+   condition. That is, every co-recursive call must be guarded by a
+   constructor. In other words, every co-recursive call must be a direct
+   argument to a constructor of the co-inductive type we are generating. *)
