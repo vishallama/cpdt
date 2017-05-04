@@ -30,3 +30,5 @@ Section stream.
   CoInductive stream : Type :=
   | Cons : A -> stream -> stream.
 End stream.
+
+Arguments Cons {A} _ _.
